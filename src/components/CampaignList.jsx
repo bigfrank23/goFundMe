@@ -7,6 +7,7 @@ import './CampaignList.css';
 
 const CampaignList = () => {
   const [campaigns, setCampaigns] = useState([]);
+  const [isLoading, setIsLoading] = useState(true)
 
   const targetDate = new Date('August 31, 2023 23:59:59'); // Change to your target date
   const [timeLeft, setTimeLeft] = useState(targetDate - new Date());
@@ -38,6 +39,7 @@ const CampaignList = () => {
     try {
       const response = await axios.get('https://gofundme.onrender.com/api/campaigns');
       setCampaigns(response.data);
+      setIsLoading(false)
     } catch (error) {
       console.error(error);
     }
@@ -53,24 +55,29 @@ const CampaignList = () => {
         {days} days {hours} hours {minutes} minutes {seconds} seconds
       </p>
       </div>
-      <div className="campaigns">
-        {campaigns.map((campaign) => (
-          <div className="campaign-card" key={campaign._id}>
-            <h3>{campaign.title}</h3>
-            <p>{campaign.description}</p>
-            <div className='campaign-price-box'>
-              <div className="campaign-price">
-              <p>Goal: <strong>NGN</strong> {campaign.goalAmount}</p>
-              <p>Current: <strong>NGN</strong> {campaign.currentAmount}</p>
+      <div>{isLoading ? (<p style={{padding: '1rem'}}>Please wait. Loading contents...</p>) : (
+        <div className="campaigns">
+          {campaigns.map((campaign) => (
+            <div className="campaign-card" key={campaign._id}>
+              <h3>{campaign.title}</h3>
+              <p>{campaign.description}</p>
+              <div className='campaign-price-box'>
+                <div className="campaign-price">
+                <p>Goal: <strong>NGN</strong> {campaign.goalAmount}</p>
+                <p>Current: <strong>NGN</strong> {campaign.currentAmount}</p>
+                </div>
               </div>
+              <Link to={`/donate/${campaign._id}`}>Donate</Link>
             </div>
-            <Link to={`/donate/${campaign._id}`}>Donate</Link>
-          </div>
-        ))}
-      </div>
-      <div className="proof-img">
+          ))}
+        </div>
+
+      )}</div>
+      {/* <div className="proof-img">
+        {!campaigns ? '' : 
         <img src={ProofImg} alt="" style={{width: '100%'}} />
-      </div>
+        }
+      </div> */}
     </div>
   );
 };
